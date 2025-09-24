@@ -10,8 +10,7 @@ export default function Routers() {
     
   function RequireAuth({ children }) {
     const location = useLocation();
-    let token = atob(localStorage.getItem(tokenStorageKey));
-
+    let token = localStorage.getItem(tokenStorageKey);
     if (!token) {
       return <Navigate to={`/login`} state={{ from: location }} replace />;
     }

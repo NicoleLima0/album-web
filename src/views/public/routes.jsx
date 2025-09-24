@@ -10,7 +10,10 @@ function ViewPublic() {
         path: `/`,
         element: <Navigate to={`/login`} replace />,
       },
-      { path: `/login`, element: <LoginPage /> },
+      {
+        path: `/login`,
+        element: <LoginPage />,
+      },
     ]);
 
   return (

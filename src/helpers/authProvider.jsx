@@ -9,13 +9,14 @@ import { AuthContext } from "../contexts";
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, isError, setIsError) => {
     if (email === "adm" && password === "123") {
-      localStorage.setItem(userStorageKey, "ADM");
+      localStorage.setItem(userStorageKey, email);
       localStorage.setItem(tokenStorageKey, Math.random() * 1001);
-      navigate(appRoot);
+      isError && setIsError(false);
+      navigate(`${appRoot}/home`);
     } else {
-      alert("Senha errada!");
+      setIsError(true);
     }
   };
 
