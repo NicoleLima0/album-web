@@ -1,29 +1,51 @@
 .album-detail-container {
-  padding: 2rem 3rem;
+  padding: 1.5rem;
   color: var(--text-color);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  max-height: 100vh;
+  // min-height: 100vh;
+
+  @media (min-width: 768px) {
+    padding: 2rem 3rem;
+  }
 
   .home-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
     padding-bottom: 1.5rem;
     margin-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .header-title {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 500;
       margin: 0;
+
+      @media (min-width: 768px) {
+        font-size: 1.8rem;
+      }
     }
 
     .user-info {
       font-size: 1rem;
       display: flex;
       align-items: center;
+      width: 100%;
+      justify-content: space-between;
+
+      @media (min-width: 768px) {
+        width: auto;
+        justify-content: flex-start;
+      }
+
       .logout-button {
         text-transform: none;
         font-size: 1rem;
@@ -36,13 +58,35 @@
 
   .album-info-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
     margin-bottom: 2rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .album-main-title {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+
+      @media (min-width: 768px) {
+        font-size: 1.75rem;
+      }
+    }
+
+    .album-description {
+      color: var(--text-color);
+    }
 
     .view-options {
       display: flex;
       gap: 5px;
+      align-items: center;
       span {
         &:hover {
           cursor: pointer;
@@ -52,19 +96,49 @@
         }
       }
     }
-
-    .album-main-title {
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-
-    .album-description {
-      color: var(--text-color);
-    }
   }
 
   .photos-content {
     flex-grow: 1;
+    .photos-table-container {
+      box-shadow: none !important;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .photos-table-head th {
+      background-color: var(--table-header-bg);
+      color: var(--table-header-text);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .color-cell-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .album-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .btn-delete {
+      background-color: var(--button-delete-bg) !important;
+      text-transform: none !important;
+      font-weight: bold !important;
+      border-radius: var(--border-radius) !important;
+      padding: 8px 24px !important;
+    }
   }
 
   .photo-item {
@@ -78,8 +152,27 @@
 
   .album-detail-actions {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    gap: 0.5rem;
     padding-top: 2rem;
+
+    .add-photos-button,
+    .back-button {
+      width: 100%;
+      margin: 0;
+    }
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: flex-end;
+      .add-photos-button,
+      .back-button {
+        width: auto;
+      }
+      .back-button {
+        margin-left: 5px;
+      }
+    }
   }
 
   .add-photos-button {
@@ -87,18 +180,16 @@
     padding: 0.6rem 1rem;
     text-transform: none;
     font-size: 1rem;
-
     &:hover {
       opacity: 0.9;
     }
   }
+
   .back-button {
-    margin-left: 5px;
     background-color: #949494;
     padding: 0.6rem 1rem;
     text-transform: none;
     font-size: 1rem;
-
     &:hover {
       opacity: 0.9;
     }

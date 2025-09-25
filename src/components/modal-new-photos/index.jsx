@@ -5,8 +5,9 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
 import { X } from "lucide-react";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -16,11 +17,27 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogActions-root": {
     padding: theme.spacing(1),
   },
+  "& .MuiDialog-paper": {
+    width: "calc(100% - 32px)",
+    margin: "16px",
+    [theme.breakpoints.up("sm")]: {
+      width: "100%",
+      maxWidth: "600px",
+      margin: "32px",
+    },
+  },
 }));
 
 function ModalNewPhotos({ open, setOpen }) {
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Adicione aqui a lógica para enviar os dados do formulário
+    console.log("Formulário enviado!");
+    handleClose();
   };
 
   return (
@@ -30,43 +47,76 @@ function ModalNewPhotos({ open, setOpen }) {
         aria-labelledby="customized-dialog-title"
         open={open}
       >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Adicione uma foto
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={(theme) => ({
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: theme.palette.grey[500],
-          })}
+        <DialogTitle
+          sx={{ m: 0, p: 2 }}
+          id="customized-dialog-title"
+          className="modal-header"
         >
-          <X/>
-        </IconButton>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-            ac consectetur ac, vestibulum at eros.
+          <Typography variant="h6" component="div">
+            Adicionar novas fotos
           </Typography>
-          <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-            Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor
-            auctor.
-          </Typography>
-          <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo
-            cursus magna, vel scelerisque nisl consectetur et. Donec sed odio
-            dui. Donec ullamcorper nulla non metus auctor fringilla.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Save changes
+          <Button
+            color="inherit"
+            onClick={handleClose}
+            className="close-button"
+          >
+            <X />
           </Button>
-        </DialogActions>
+        </DialogTitle>
+
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit}
+        >
+          <DialogContent dividers className="modal-content">
+            <Box className="form-field file-input-wrapper">
+              <Button
+                variant="contained"
+                component="label"
+                className="file-input-button"
+              >
+                Escolher arquivo...
+                <input type="file" hidden />
+              </Button>
+            </Box>
+
+            <TextField
+              label="Título"
+              variant="outlined"
+              fullWidth
+              className="form-field"
+            />
+            <TextField
+              label="Descrição"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={3}
+              className="form-field"
+            />
+            <TextField
+              label="Data/Hora de aquisição"
+              type="datetime-local"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              className="form-field"
+            />
+            <TextField
+              label="Cor predominante"
+              variant="outlined"
+              fullWidth
+              className="form-field"
+            />
+          </DialogContent>
+          <DialogActions className="modal-actions">
+            <Button type="submit" variant="contained" className="submit-button">
+              Enviar
+            </Button>
+          </DialogActions>
+        </Box>
       </BootstrapDialog>
     </>
   );

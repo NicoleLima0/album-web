@@ -6,15 +6,21 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import { X } from "lucide-react";
+import { TextField } from "@mui/material";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
+    borderRadius: theme.shape.borderRadius,
+    width: "100%",
+    maxWidth: "500px", 
+  },
   "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+    padding: theme.spacing(3),
   },
   "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
+    justifyContent: "center", 
   },
 }));
 
@@ -23,15 +29,22 @@ function ModalNewAlbum({ open, setOpen }) {
     setOpen(false);
   };
 
+  const handleConclude = () => {
+    // Adicione aqui a lógica para salvar o novo álbum
+    console.log("Salvando novo álbum...");
+    handleClose();
+  };
+
   return (
     <>
-      <BootstrapDialog
+       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        className="modal-new-album-container"
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Adicione um álbum
+          Criar novo álbum
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -43,28 +56,37 @@ function ModalNewAlbum({ open, setOpen }) {
             color: theme.palette.grey[500],
           })}
         >
-          <X/>
+          <X size={20} />
         </IconButton>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-            ac consectetur ac, vestibulum at eros.
-          </Typography>
-          <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-            Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor
-            auctor.
-          </Typography>
-          <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo
-            cursus magna, vel scelerisque nisl consectetur et. Donec sed odio
-            dui. Donec ullamcorper nulla non metus auctor fringilla.
-          </Typography>
+        <DialogContent dividers className="modal-content-form">
+          <TextField
+            autoFocus
+            margin="dense"
+            id="title"
+            label="Título"
+            type="text"
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            margin="dense"
+            id="description"
+            label="Descrição"
+            type="text"
+            fullWidth
+            multiline
+            rows={4} 
+            variant="outlined"
+          />
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Save changes
+          <Button
+            className="conclude-button"
+            variant="contained"
+            onClick={handleConclude}
+            sx={{ textTransform: 'none' }}
+          >
+            Concluir
           </Button>
         </DialogActions>
       </BootstrapDialog>

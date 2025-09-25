@@ -3,12 +3,22 @@ import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts";
 import { appRoot, userStorageKey } from "../../../constants/defaultValues";
 import ModalNewPhotos from "../../../components/modal-new-photos";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import {
   Button,
   Box,
   ImageList,
   ImageListItem,
   Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Link,
 } from "@mui/material";
 
 const albumsData = {
@@ -47,6 +57,9 @@ function AlbumDetail() {
   const album = albumsData[albumId];
   const [isView, setIsView] = useState("miniature");
   const [modalNewPhoto, setModalNewPhoto] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   if (!album) {
     return (
@@ -58,6 +71,54 @@ function AlbumDetail() {
       </div>
     );
   }
+
+  const photosData = [
+    {
+      id: 1,
+      fileName: "1.jpg",
+      sizeInBytes: 261120, // 255kb * 1024
+      acquisitionDate: new Date("2021-04-12T10:24:00"),
+      dominantColor: "#ccbbff",
+    },
+    {
+      id: 2,
+      fileName: "2.png",
+      sizeInBytes: 96,
+      acquisitionDate: new Date("2020-03-14T15:00:00"),
+      dominantColor: "#42fbcc",
+    },
+  ];
+
+  const formatBytes = (bytes, decimals = 0) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  };
+
+  const formatDate = (date) => {
+    return date
+      .toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+      .replace(",", "");
+  };
+
+  const getCols = () => {
+    if (isMobile) {
+      return 2; 
+    }
+    if (isTablet) {
+      return 3; 
+    }
+    return 4; 
+  };
 
   return (
     <>
@@ -112,10 +173,53 @@ function AlbumDetail() {
         </div>
         <div className="photos-content">
           {isView === "table" ? (
-            <div>Tabela</div>
+            <>
+              <TableContainer
+                component={Paper}
+                className="photos-table-container"
+              >
+                <Table sx={{ minWidth: 650 }} aria-label="tabela de fotos">
+                  <TableHead className="photos-table-head">
+                    <TableRow>
+                      <TableCell>Foto</TableCell>
+                      <TableCell>Tamanho</TableCell>
+                      <TableCell>Data de aquisição</TableCell>
+                      <TableCell>Cor predominante</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {photosData.map((photo) => (
+                      <TableRow key={photo.id}>
+                        <TableCell>{photo.fileName}</TableCell>
+                        <TableCell>{formatBytes(photo.sizeInBytes)}</TableCell>
+                        <TableCell>
+                          {formatDate(photo.acquisitionDate)}
+                        </TableCell>
+                        <TableCell>
+                          <Box className="color-cell-content">
+                            <Box
+                              className="color-swatch"
+                              style={{ backgroundColor: photo.dominantColor }}
+                            />
+                            <Typography variant="body2">
+                              {photo.dominantColor}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <footer className="album-actions">
+                <Button variant="contained" className="btn-delete">
+                  Excluir álbum
+                </Button>
+              </footer>
+            </>
           ) : (
             <Box sx={{ width: "100%" }}>
-              <ImageList variant="standard" cols={4} gap={30}>
+              <ImageList variant="standard" cols={getCols()} gap={30}>
                 {album.photos.map((photo) => (
                   <ImageListItem key={photo.id} className="photo-item">
                     <div className="photo-placeholder" />

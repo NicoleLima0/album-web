@@ -9,7 +9,11 @@ import {
   ImageListItem,
   ImageListItemBar,
 } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import ModalNewAlbum from "../../../components/modal-new-album";
+
+
 
 const itemData = [
   {
@@ -47,7 +51,23 @@ function Home() {
 
   const handleAlbumClick = (albumId) => {
     navigate(`${appRoot}/album/${albumId}`);
+
+
   };
+
+const theme = useTheme();
+const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
+const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+
+const getCols = () => {
+  if (isMobile) {
+    return 1; 
+  }
+  if (isTablet) {
+    return 2; 
+  }
+  return 4; 
+};
 
   return (
     <>
@@ -70,7 +90,7 @@ function Home() {
       </div>
       <div className="albums-content">
         <Box sx={{ width: "100%" }}>
-          <ImageList variant="standard" cols={4} gap={30}>
+          <ImageList variant="standard" cols={getCols()} gap={30}>
             {itemData.map((item) => (
               <ImageListItem
                 key={item.id}
