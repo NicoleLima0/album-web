@@ -2,8 +2,8 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../../contexts/index";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import MainLogin from "../../../components/stepsLogin/main";
-import SignUpLogin from "../../../components/stepsLogin/signUp";
+import MainLogin from "../../../components/steps-login/main";
+import SignUpLogin from "../../../components/steps-login/signUp";
 import { Card, CardContent } from "@mui/material";
 
 function Login() {

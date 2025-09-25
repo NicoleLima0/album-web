@@ -1,9 +1,92 @@
-.home {
-    padding: 10px;
-    height: 100vh;
-    width: 100%;
-    .nav-home {
+.home-container {
+    padding: 2rem 3rem;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+
+    .header-title {
+        font-size: 1.8rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .user-info {
+        font-size: 1rem;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+
+        .logout-button {
+            text-transform: none;
+            font-size: 1rem;
+            font-weight: normal;
+            color: var(--primary-color);
+            padding-left: 0.5rem;
+        }
+    }
+}
+
+.albums-content {
+    flex-grow: 1;
+
+    .album-item.clickable {
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+            transform: translateY(-5px);
+        }
+    }
+}
+
+.album-item {
+    .album-placeholder {
+        width: 100%;
+        height: 180px;
+        background-color: var(--placeholder-bg);
+        border-radius: 4px;
+    }
+
+    .album-info {
+        .MuiImageListItemBar-titleWrap {
+            padding: 12px 0 0 0;
+        }
+
+        .MuiImageListItemBar-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .MuiImageListItemBar-subtitle {
+            font-size: 0.9rem;
+            color: darken(#333, 20%);
+        }
+    }
+}
+
+.home-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.create-album-button {
+    background-color: var(--primary-color) !important;
+    padding: 0.6rem 1rem !important;
+    text-transform: none !important;
+    font-size: 1rem !important;
+
+    &:hover {
+        opacity: 0.9 !important;
     }
 }
