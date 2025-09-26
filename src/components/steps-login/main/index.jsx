@@ -67,7 +67,7 @@ function MainLogin({ email, setEmail, password, setPassword, auth, setStep }) {
               ),
             }}
           />
-          {isError ? <Alert severity="error">Senha incorreta</Alert> : <></>}
+          {isError ? <Alert severity="error">Erro ao realizar login</Alert> : <></>}
           <div className="other-actions">
             <Button
               variant="text"

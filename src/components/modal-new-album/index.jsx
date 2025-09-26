@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
@@ -7,37 +6,72 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import { X } from "lucide-react";
-import { TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
+import { useState } from "react";
+import { albunsKey } from "../../constants/defaultValues";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
     borderRadius: theme.shape.borderRadius,
     width: "100%",
-    maxWidth: "500px", 
+    maxWidth: "500px",
   },
   "& .MuiDialogContent-root": {
     padding: theme.spacing(3),
   },
   "& .MuiDialogActions-root": {
     padding: theme.spacing(2),
-    justifyContent: "center", 
+    justifyContent: "center",
   },
 }));
 
-function ModalNewAlbum({ open, setOpen }) {
+function ModalNewAlbum({ open, setOpen, setItemData }) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
   const handleClose = () => {
     setOpen(false);
+    setTitle("");
+    setDescription("");
   };
 
   const handleConclude = () => {
-    // Adicione aqui a lógica para salvar o novo álbum
-    console.log("Salvando novo álbum...");
+    const payload = {
+      id: Math.floor(Math.random() * 10000) + 1,
+      title: title,
+      description: description,
+    };
+
+    const existingAlbuns = localStorage.getItem(albunsKey);
+
+    let albuns = [];
+
+    if (existingAlbuns) {
+      try {
+        const parsedAlbuns = JSON.parse(existingAlbuns);
+
+        if (Array.isArray(parsedAlbuns)) {
+          albuns = parsedAlbuns;
+        } else {
+          albuns = [parsedAlbuns];
+        }
+      } catch (error) {
+        console.error("Erro ao analisar os dados do localStorage:", error);
+        albuns = [];
+      }
+    }
+    albuns.push(payload);
+
+    setItemData((prevItemData) => [...prevItemData, payload]);
+    localStorage.setItem(albunsKey, JSON.stringify(albuns));
+
+   
     handleClose();
   };
 
   return (
     <>
-       <BootstrapDialog
+      <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -58,37 +92,50 @@ function ModalNewAlbum({ open, setOpen }) {
         >
           <X size={20} />
         </IconButton>
-        <DialogContent dividers className="modal-content-form">
-          <TextField
-            autoFocus
-            margin="dense"
-            id="title"
-            label="Título"
-            type="text"
-            fullWidth
-            variant="outlined"
-          />
-          <TextField
-            margin="dense"
-            id="description"
-            label="Descrição"
-            type="text"
-            fullWidth
-            multiline
-            rows={4} 
-            variant="outlined"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            className="conclude-button"
-            variant="contained"
-            onClick={handleConclude}
-            sx={{ textTransform: 'none' }}
-          >
-            Concluir
-          </Button>
-        </DialogActions>
+        <Box
+          component="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleConclude();
+          }}
+        >
+          <DialogContent dividers className="modal-content-form">
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="title"
+              label="Título"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              type="text"
+              fullWidth
+              variant="outlined"
+            />
+            <TextField
+              margin="dense"
+              id="description"
+              label="Descrição"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              type="text"
+              fullWidth
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              type="submit"
+              className="conclude-button"
+              variant="contained"
+              sx={{ textTransform: "none" }}
+            >
+              Concluir
+            </Button>
+          </DialogActions>
+        </Box>
       </BootstrapDialog>
     </>
   );
