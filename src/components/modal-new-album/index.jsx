@@ -65,7 +65,6 @@ function ModalNewAlbum({ open, setOpen, setItemData }) {
     setItemData((prevItemData) => [...prevItemData, payload]);
     localStorage.setItem(albunsKey, JSON.stringify(albuns));
 
-   
     handleClose();
   };
 

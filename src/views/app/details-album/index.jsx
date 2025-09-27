@@ -1,7 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts";
-import { appRoot, userStorageKey } from "../../../constants/defaultValues";
+import {
+  albunsKey,
+  appRoot,
+  userStorageKey,
+} from "../../../constants/defaultValues";
 import ModalNewPhotos from "../../../components/modal-new-photos";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -21,45 +25,28 @@ import {
   Link,
 } from "@mui/material";
 
-const albumsData = {
-  1: {
-    title: "Álbum de aniversário",
-    description: "Descrição do meu álbum",
-    photos: [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 104 }, { id: 105 }],
-  },
-  2: {
-    title: "Álbum de aniversário",
-    description: "Descrição do meu álbum",
-    photos: [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 104 }, { id: 105 }],
-  },
-  3: {
-    title: "Álbum de aniversário",
-    description: "Descrição do meu álbum",
-    photos: [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 104 }, { id: 105 }],
-  },
-  4: {
-    title: "Álbum de aniversário",
-    description: "Descrição do meu álbum",
-    photos: [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 104 }, { id: 105 }],
-  },
-  5: {
-    title: "Álbum de aniversário",
-    description: "Descrição do meu álbum",
-    photos: [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 104 }, { id: 105 }],
-  },
-};
-
 function AlbumDetail() {
   const auth = useContext(AuthContext);
   const userName = localStorage.getItem(userStorageKey);
   const { albumId } = useParams();
   const navigate = useNavigate();
-  const album = albumsData[albumId];
+  const [album, setAlbum] = useState({});
   const [isView, setIsView] = useState("miniature");
   const [modalNewPhoto, setModalNewPhoto] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(() => {
+    const existingAlbuns = localStorage.getItem(albunsKey);
+    const albuns = existingAlbuns ? JSON.parse(existingAlbuns) : [];
+    const albumFound = albuns.find(
+      (album) => album.id === parseInt(albumId, 10)
+    );
+
+    setAlbum(albumFound);
+  }, [albumId]);
 
   if (!album) {
     return (
@@ -112,17 +99,21 @@ function AlbumDetail() {
 
   const getCols = () => {
     if (isMobile) {
-      return 2; 
+      return 2;
     }
     if (isTablet) {
-      return 3; 
+      return 3;
     }
-    return 4; 
+    return 4;
   };
 
   return (
     <>
-      <ModalNewPhotos open={modalNewPhoto} setOpen={setModalNewPhoto} />
+      <ModalNewPhotos
+        open={modalNewPhoto}
+        setOpen={setModalNewPhoto}
+        setPhotos={setPhotos}
+      />
       <div className="album-detail-container">
         <div className="home-header">
           <h1 className="header-title">Meus álbuns de fotos</h1>
@@ -220,7 +211,7 @@ function AlbumDetail() {
           ) : (
             <Box sx={{ width: "100%" }}>
               <ImageList variant="standard" cols={getCols()} gap={30}>
-                {album.photos.map((photo) => (
+                {photos?.map((photo) => (
                   <ImageListItem key={photo.id} className="photo-item">
                     <div className="photo-placeholder" />
                   </ImageListItem>

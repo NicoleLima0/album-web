@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
@@ -8,7 +7,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
-import { X } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { photosKey } from "../../constants/defaultValues";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -28,15 +30,65 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-function ModalNewPhotos({ open, setOpen }) {
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
+function ModalNewPhotos({ open, setOpen, setPhotos }) {
+  const [image, setImage] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [color, setColor] = useState("");
+  const { albumId } = useParams();
+
   const handleClose = () => {
     setOpen(false);
   };
 
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Adicione aqui a lógica para enviar os dados do formulário
-    console.log("Formulário enviado!");
+    const payload = {
+      albumId: albumId,
+      image: image,
+      title: title,
+      color: color,
+      description: description,
+      date: date,
+    };
+    const existingPhotos = localStorage.getItem(photosKey);
+
+    let photos = [];
+
+    if (existingPhotos) {
+      try {
+        const parsedAlbuns = JSON.parse(existingPhotos);
+
+        if (Array.isArray(parsedAlbuns)) {
+          photos = parsedAlbuns;
+        } else {
+          photos = [parsedAlbuns];
+        }
+      } catch (error) {
+        console.error("Erro ao analisar os dados do localStorage:", error);
+        photos = [];
+      }
+    }
+    photos.push(payload);
+
+    setPhotos((prevItemData) => [...prevItemData, payload]);
+    localStorage.setItem(photosKey, JSON.stringify(photos));
+
     handleClose();
   };
 
@@ -66,27 +118,44 @@ function ModalNewPhotos({ open, setOpen }) {
 
         <Box
           component="form"
-          noValidate
           autoComplete="off"
           onSubmit={handleSubmit}
         >
           <DialogContent dividers className="modal-content">
             <Box className="form-field file-input-wrapper">
               <Button
-                variant="contained"
                 component="label"
-                className="file-input-button"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<Upload />}
               >
-                Escolher arquivo...
-                <input type="file" hidden />
+                Escolher foto
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+
+                    if (file) {
+                      const blobUrl = URL.createObjectURL(file);
+                      setImage(blobUrl);
+                    }
+                  }}
+                />
               </Button>
+              {image ? <img src={image} /> : <></>}
             </Box>
 
             <TextField
               label="Título"
+              required
               variant="outlined"
               fullWidth
               className="form-field"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
             />
             <TextField
               label="Descrição"
@@ -95,6 +164,10 @@ function ModalNewPhotos({ open, setOpen }) {
               multiline
               rows={3}
               className="form-field"
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+              }}
             />
             <TextField
               label="Data/Hora de aquisição"
@@ -103,12 +176,20 @@ function ModalNewPhotos({ open, setOpen }) {
               fullWidth
               InputLabelProps={{ shrink: true }}
               className="form-field"
+              value={date}
+              onChange={(e) => {
+                setDate(e.target.value);
+              }}
             />
             <TextField
               label="Cor predominante"
               variant="outlined"
               fullWidth
               className="form-field"
+              value={color}
+              onChange={(e) => {
+                setColor(e.target.value);
+              }}
             />
           </DialogContent>
           <DialogActions className="modal-actions">
