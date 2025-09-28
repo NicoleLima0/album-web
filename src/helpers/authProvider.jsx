@@ -5,7 +5,7 @@ import {
   tokenStorageKey,
   userStorageKey,
 } from "../constants/defaultValues";
-import { AuthContext } from "../contexts";
+import { AuthContext } from "../contexts/auth";
 
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();

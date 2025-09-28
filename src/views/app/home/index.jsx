@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../../contexts";
+import { AuthContext } from "../../../contexts/auth";
 import {
   albunsKey,
   appRoot,
+  photosKey,
   userStorageKey,
 } from "../../../constants/defaultValues";
 import { useNavigate } from "react-router-dom";
@@ -16,19 +17,42 @@ import {
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ModalNewAlbum from "../../../components/modal-new-album";
+import { Frown, ImageUp, Pencil, Trash2 } from "lucide-react";
+import ModalAlert from "../../../components/modal-alert";
 
 function Home() {
   const auth = useContext(AuthContext);
   const userName = localStorage.getItem(userStorageKey);
   const [modalNewAlbum, setModalNewAlbum] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
   const [itemData, setItemData] = useState([]);
   const navigate = useNavigate();
+  const [albumsWithCovers, setAlbumsWithCovers] = useState([]);
+  const [idDelete, setIdDelete] = useState(null);
 
   useEffect(() => {
     const existingAlbuns = localStorage.getItem(albunsKey);
     const albuns = existingAlbuns ? JSON.parse(existingAlbuns) : [];
     setItemData(albuns);
   }, []);
+
+  useEffect(() => {
+    if (itemData.length >= 1) {
+      const existingPhotos = localStorage.getItem(photosKey);
+      const photos = existingPhotos ? JSON.parse(existingPhotos) : [];
+
+      const processedAlbums = itemData.map((album) => {
+        const coverPhoto = photos.find((photo) => photo.albumId === album.id);
+
+        return {
+          ...album,
+          coverImage: coverPhoto ? coverPhoto.image : null,
+        };
+      });
+
+      setAlbumsWithCovers(processedAlbums);
+    }
+  }, [itemData]);
 
   const handleAlbumClick = (albumId) => {
     navigate(`${appRoot}/album/${albumId}`);
@@ -48,12 +72,31 @@ function Home() {
     return 4;
   };
 
+  // function editAlbum(item) {
+  //   debugger;
+  // }
+
+  function deleteAlbum() {
+    console.log(idDelete);
+  }
+
   return (
     <>
       <ModalNewAlbum
         open={modalNewAlbum}
         setOpen={setModalNewAlbum}
         setItemData={setItemData}
+      />
+      <ModalAlert
+        open={modalDelete}
+        title="Atenção!"
+        text="Deseja realmente excluir esse álbum?"
+        onConfirm={() => {
+          deleteAlbum();
+        }}
+        onCancel={() => {
+          setModalDelete(false);
+        }}
       />
       <div className="home-container">
         <div className="home-header">
@@ -73,23 +116,66 @@ function Home() {
         </div>
         <div className="albums-content">
           <Box sx={{ width: "100%" }}>
-            <ImageList variant="standard" cols={getCols()} gap={30}>
-              {itemData?.map((item) => (
-                <ImageListItem
-                  key={item.id}
-                  className="album-item clickable"
-                  onClick={() => handleAlbumClick(item.id)}
-                >
-                  <div className="album-placeholder" />
-                  <ImageListItemBar
-                    title={item.title}
-                    subtitle={item.description}
-                    position="below"
-                    className="album-info"
-                  />
-                </ImageListItem>
-              ))}
-            </ImageList>
+            {albumsWithCovers.length >= 1 ? (
+              <>
+                <ImageList variant="standard" cols={getCols()} gap={30}>
+                  {albumsWithCovers?.map((item) => (
+                    <ImageListItem
+                      key={item.id}
+                      className="album-item clickable"
+                    >
+                      {item.coverImage ? (
+                        <img
+                          onClick={() => handleAlbumClick(item.id)}
+                          src={item.coverImage}
+                        />
+                      ) : (
+                        <div
+                          className="album-placeholder"
+                          onClick={() => handleAlbumClick(item.id)}
+                        >
+                          <ImageUp />
+                          Nenhuma foto neste álbum
+                        </div>
+                      )}
+                      <ImageListItemBar
+                        title={item.title}
+                        subtitle={
+                          <div className="d-flex align-items-center justify-content-between">
+                            {item.description}
+                            <div>
+                              <Button
+                                onClick={() => {
+                                  // editAlbum(item.id);
+                                }}
+                                className="edit-album"
+                              >
+                                <Pencil />
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setModalDelete(true);
+                                  setIdDelete(item.id);
+                                }}
+                                className="delete-album"
+                              >
+                                <Trash2 />
+                              </Button>
+                            </div>
+                          </div>
+                        }
+                        position="below"
+                        className="album-info"
+                      />
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              </>
+            ) : (
+              <div className="no-data">
+                Nenhum álbum foi cadastrado! <Frown />
+              </div>
+            )}
           </Box>
         </div>
         <footer className="home-actions">

@@ -11,6 +11,7 @@ import { Upload, X } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { photosKey } from "../../constants/defaultValues";
+import { Transition } from "../../contexts/transition";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -52,14 +53,18 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
 
   const handleClose = () => {
     setOpen(false);
+    setImage(null);
+    setTitle("");
+    setDescription("");
+    setDate("");
+    setColor("");
   };
-
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const payload = {
-      albumId: albumId,
+      albumId: Number(albumId),
+      imageId: Math.floor(Math.random() * 10000) + 1,
       image: image,
       title: title,
       color: color,
@@ -98,6 +103,9 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        slots={{
+          transition: Transition,
+        }}
       >
         <DialogTitle
           sx={{ m: 0, p: 2 }}
@@ -116,14 +124,11 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
           </Button>
         </DialogTitle>
 
-        <Box
-          component="form"
-          autoComplete="off"
-          onSubmit={handleSubmit}
-        >
+        <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
           <DialogContent dividers className="modal-content">
             <Box className="form-field file-input-wrapper">
               <Button
+                className="btn-upload"
                 component="label"
                 role={undefined}
                 variant="contained"
@@ -143,7 +148,7 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
                   }}
                 />
               </Button>
-              {image ? <img src={image} /> : <></>}
+              {image ? <img className="image-photo" src={image} /> : <></>}
             </Box>
 
             <TextField

@@ -57,9 +57,26 @@
 .albums-content {
     flex-grow: 1;
 
+    .MuiImageListItem-img {
+        height: 185px !important;
+        border-radius: 5px;
+    }
+
+    .no-data {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        height: calc(100vh - 200px);
+    }
+
     .album-item.clickable {
         cursor: pointer;
         transition: transform 0.2s ease-in-out;
+        border: 1px solid #80808080;
+        border-radius: 10px;
+        padding: 5px;
 
         &:hover {
             transform: translateY(-5px);
@@ -72,7 +89,20 @@
         width: 100%;
         height: 180px;
         background-color: var(--placeholder-bg);
-        border-radius: 4px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .edit-album {
+        color: var(--active-link-color);
+    }
+
+    .delete-album {
+        color: var(--button-delete-bg);
     }
 
     .album-info {

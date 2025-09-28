@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { AuthContext } from "../../../contexts/index";
+import { AuthContext } from "../../../contexts/auth";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import MainLogin from "../../../components/steps-login/main";

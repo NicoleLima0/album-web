@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { Box, TextField } from "@mui/material";
 import { useState } from "react";
 import { albunsKey } from "../../constants/defaultValues";
+import { Transition } from "../../contexts/transition";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -74,6 +75,9 @@ function ModalNewAlbum({ open, setOpen, setItemData }) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        slots={{
+          transition: Transition,
+        }}
         className="modal-new-album-container"
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">

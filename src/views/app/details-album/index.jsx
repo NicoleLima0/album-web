@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../contexts";
+import { AuthContext } from "../../../contexts/auth";
 import {
   albunsKey,
   appRoot,
+  photosKey,
   userStorageKey,
 } from "../../../constants/defaultValues";
 import ModalNewPhotos from "../../../components/modal-new-photos";
@@ -47,6 +48,13 @@ function AlbumDetail() {
 
     setAlbum(albumFound);
   }, [albumId]);
+
+  useEffect (() => {
+    const existingPhotos = localStorage.getItem(photosKey);
+    const photos = existingPhotos ? JSON.parse(existingPhotos) : [];
+    const photosFound = photos.filter(item => item.albumId === Number(albumId));
+    setPhotos(photosFound)
+  },[albumId]);
 
   if (!album) {
     return (
@@ -213,7 +221,8 @@ function AlbumDetail() {
               <ImageList variant="standard" cols={getCols()} gap={30}>
                 {photos?.map((photo) => (
                   <ImageListItem key={photo.id} className="photo-item">
-                    <div className="photo-placeholder" />
+                    {/* <div className="photo-placeholder" /> */}
+                    <img src={photo.image}/>
                   </ImageListItem>
                 ))}
               </ImageList>
@@ -228,7 +237,7 @@ function AlbumDetail() {
               setModalNewPhoto(true);
             }}
           >
-            Adicionar fotos
+            Adicionar foto
           </Button>
           <Button
             variant="contained"
