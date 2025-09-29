@@ -6,16 +6,16 @@ import {
   userStorageKey,
 } from "../constants/defaultValues";
 import { AuthContext } from "../contexts/auth";
+import { toast } from "react-toastify";
 
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  const signIn = (email, password, isError, setIsError) => {
+  const signIn = (email, password) => {
     const existingAccountsRaw = localStorage.getItem(accountsKey);
 
     if (!existingAccountsRaw) {
-      alert("Login falhou: Nenhuma conta cadastrada.");
-      setIsError(true);
+      toast.error("Login falhou: Nenhuma conta cadastrada.");
       return null;
     }
 
@@ -28,11 +28,9 @@ export default function AuthProvider({ children }) {
     if (foundUser) {
       localStorage.setItem(userStorageKey, foundUser.user);
       localStorage.setItem(tokenStorageKey, Math.random() * 1001);
-      isError && setIsError(false);
       navigate(`${appRoot}/home`);
     } else {
-      alert("Login falhou: E-mail ou senha inválidos.");
-      setIsError(true);
+      toast.error("Login falhou: E-mail ou senha inválidos.");
     }
   };
 
@@ -43,8 +41,7 @@ export default function AuthProvider({ children }) {
     setEmailCreated,
     passwordConfirmCreated,
     setPasswordConfirmCreated,
-    setPasswordCreated,
-    setOpenSnack
+    setPasswordCreated
   ) => {
     const payload = {
       user: userNameCreated,
@@ -62,21 +59,21 @@ export default function AuthProvider({ children }) {
         (account) => account.email === emailCreated
       );
       if (userExists) {
-        alert(`Erro: Uma conta com o e-mail "${emailCreated}" já existe.`);
+        toast.warn(`Erro: Uma conta com o e-mail "${emailCreated}" já existe.`);
         return;
       }
 
       accounts.push(payload);
       localStorage.setItem(accountsKey, btoa(JSON.stringify(accounts)));
 
-      setOpenSnack(true);
+      toast.success("Conta criada com sucesso!");
 
       setUserNameCreated("");
       setEmailCreated("");
       setPasswordConfirmCreated("");
       setPasswordCreated("");
     } catch (error) {
-      alert("Falha ao cadastrar usuário");
+      toast.error("Falha ao cadastrar usuário");
       console("Falha ao cadastrar usuário:", error);
     }
   };

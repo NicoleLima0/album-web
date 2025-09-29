@@ -19,6 +19,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ModalNewAlbum from "../../../components/modal-new-album";
 import { Frown, ImageUp, Pencil, Trash2 } from "lucide-react";
 import ModalAlert from "../../../components/modal-alert";
+import { toast } from "react-toastify";
 
 function Home() {
   const auth = useContext(AuthContext);
@@ -77,7 +78,23 @@ function Home() {
   // }
 
   function deleteAlbum() {
-    console.log(idDelete);
+    const albumParaExcluir = albumsWithCovers.find(
+      (album) => album.id === idDelete
+    );
+
+    if (albumParaExcluir?.coverImage !== null) {
+      toast.warn(
+        `AVISO: O álbum "${albumParaExcluir.title}" não pode ser excluído pois possui fotos`
+      );
+      return;
+    }
+
+    const _list = albumsWithCovers.filter((album) => album.id !== idDelete);
+    setAlbumsWithCovers(_list);
+    localStorage.setItem(albunsKey, JSON.stringify(_list));
+    setModalDelete(false);
+    setIdDelete(null);
+    toast.success("Album excluído com sucesso!");
   }
 
   return (

@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { photosKey } from "../../constants/defaultValues";
 import { Transition } from "../../contexts/transition";
+import { toast } from "react-toastify";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -45,6 +46,8 @@ const VisuallyHiddenInput = styled("input")({
 
 function ModalNewPhotos({ open, setOpen, setPhotos }) {
   const [image, setImage] = useState(null);
+  const [imageName, setImageName] = useState(null);
+  const [imageSize, setImageSize] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -54,6 +57,8 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
   const handleClose = () => {
     setOpen(false);
     setImage(null);
+    setImageName(null);
+    setImageSize(null);
     setTitle("");
     setDescription("");
     setDate("");
@@ -62,6 +67,12 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (!image) {
+      toast.warn("Insira uma imagem!");
+      return;
+    }
+
     const payload = {
       albumId: Number(albumId),
       imageId: Math.floor(Math.random() * 10000) + 1,
@@ -70,6 +81,8 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
       color: color,
       description: description,
       date: date,
+      imageSize: imageSize,
+      imageName: imageName,
     };
     const existingPhotos = localStorage.getItem(photosKey);
 
@@ -89,11 +102,11 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
         photos = [];
       }
     }
+    
     photos.push(payload);
-
     setPhotos((prevItemData) => [...prevItemData, payload]);
     localStorage.setItem(photosKey, JSON.stringify(photos));
-
+    toast.success("Imagem adicionada");
     handleClose();
   };
 
@@ -140,6 +153,8 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
                   type="file"
                   onChange={(e) => {
                     const file = e.target.files[0];
+                    setImageName(file.name);
+                    setImageSize(file.size);
 
                     if (file) {
                       const blobUrl = URL.createObjectURL(file);

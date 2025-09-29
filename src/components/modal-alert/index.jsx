@@ -8,8 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Transition } from "../../contexts/transition";
 
 function ModalAlert({ open, title, text, onConfirm, onCancel }) {
-  
-    return (
+  return (
     <Dialog
       open={open}
       slots={{

@@ -23,8 +23,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Link,
 } from "@mui/material";
+import { Trash2 } from "lucide-react";
+import ModalAlert from "../../../components/modal-alert";
+import { toast } from "react-toastify";
+import { formatBytes, formatDate } from "../../../helpers/utils";
+import ModalExpandPhoto from "../../../components/modal-expand-photo";
 
 function AlbumDetail() {
   const auth = useContext(AuthContext);
@@ -38,6 +42,10 @@ function AlbumDetail() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const [photos, setPhotos] = useState([]);
+  const [idDelete, setIdDelete] = useState(null);
+  const [modalDelete, setModalDelete] = useState(false);
+  const [modalExpand, setModalExpand] = useState(false);
+  const [imageExpand, setImageExpand] = useState({});
 
   useEffect(() => {
     const existingAlbuns = localStorage.getItem(albunsKey);
@@ -49,12 +57,14 @@ function AlbumDetail() {
     setAlbum(albumFound);
   }, [albumId]);
 
-  useEffect (() => {
+  useEffect(() => {
     const existingPhotos = localStorage.getItem(photosKey);
     const photos = existingPhotos ? JSON.parse(existingPhotos) : [];
-    const photosFound = photos.filter(item => item.albumId === Number(albumId));
-    setPhotos(photosFound)
-  },[albumId]);
+    const photosFound = photos.filter(
+      (item) => item.albumId === Number(albumId)
+    );
+    setPhotos(photosFound);
+  }, [albumId]);
 
   if (!album) {
     return (
@@ -67,44 +77,6 @@ function AlbumDetail() {
     );
   }
 
-  const photosData = [
-    {
-      id: 1,
-      fileName: "1.jpg",
-      sizeInBytes: 261120, // 255kb * 1024
-      acquisitionDate: new Date("2021-04-12T10:24:00"),
-      dominantColor: "#ccbbff",
-    },
-    {
-      id: 2,
-      fileName: "2.png",
-      sizeInBytes: 96,
-      acquisitionDate: new Date("2020-03-14T15:00:00"),
-      dominantColor: "#42fbcc",
-    },
-  ];
-
-  const formatBytes = (bytes, decimals = 0) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  };
-
-  const formatDate = (date) => {
-    return date
-      .toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-      .replace(",", "");
-  };
-
   const getCols = () => {
     if (isMobile) {
       return 2;
@@ -115,12 +87,43 @@ function AlbumDetail() {
     return 4;
   };
 
+  function deleteAlbum() {
+    const indexToDelete = photos.findIndex(
+      (photo) => photo.imageId === idDelete
+    );
+
+    if (indexToDelete !== -1) {
+      photos.splice(indexToDelete, 1);
+      localStorage.setItem(photosKey, JSON.stringify(photos));
+      setModalDelete(false);
+      setIdDelete(null);
+      toast.success("Imagem deletada");
+    }
+  }
+
   return (
     <>
       <ModalNewPhotos
         open={modalNewPhoto}
         setOpen={setModalNewPhoto}
         setPhotos={setPhotos}
+      />
+      <ModalExpandPhoto
+        open={modalExpand}
+        setOpen={setModalExpand}
+        imageExpand={imageExpand}
+        setImageExpand={setImageExpand}
+      />
+      <ModalAlert
+        open={modalDelete}
+        title="Atenção!"
+        text="Deseja realmente excluir essa foto?"
+        onConfirm={() => {
+          deleteAlbum();
+        }}
+        onCancel={() => {
+          setModalDelete(false);
+        }}
       />
       <div className="album-detail-container">
         <div className="home-header">
@@ -187,45 +190,69 @@ function AlbumDetail() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {photosData.map((photo) => (
-                      <TableRow key={photo.id}>
-                        <TableCell>{photo.fileName}</TableCell>
-                        <TableCell>{formatBytes(photo.sizeInBytes)}</TableCell>
-                        <TableCell>
-                          {formatDate(photo.acquisitionDate)}
-                        </TableCell>
-                        <TableCell>
-                          <Box className="color-cell-content">
-                            <Box
-                              className="color-swatch"
-                              style={{ backgroundColor: photo.dominantColor }}
-                            />
-                            <Typography variant="body2">
-                              {photo.dominantColor}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {photos.length >= 1 ? (
+                      <>
+                        {photos.map((photo) => (
+                          <TableRow key={photo.imageId}>
+                            <TableCell>{photo.imageName}</TableCell>
+                            <TableCell>
+                              {formatBytes(photo.imageSize)}
+                            </TableCell>
+                            <TableCell>{formatDate(photo.date)}</TableCell>
+                            <TableCell>
+                              <Box className="color-cell-content">
+                                <Box
+                                  className="color-swatch"
+                                  style={{ background: photo.color }}
+                                />
+                                <Typography variant="body2">
+                                  {photo.color}
+                                </Typography>
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </>
+                    ) : (
+                      <>Nenhuma imagem encontrada</>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
-              <footer className="album-actions">
+              {/* <footer className="album-actions">
                 <Button variant="contained" className="btn-delete">
                   Excluir álbum
                 </Button>
-              </footer>
+              </footer> */}
             </>
           ) : (
             <Box sx={{ width: "100%" }}>
-              <ImageList variant="standard" cols={getCols()} gap={30}>
-                {photos?.map((photo) => (
-                  <ImageListItem key={photo.id} className="photo-item">
-                    {/* <div className="photo-placeholder" /> */}
-                    <img src={photo.image}/>
-                  </ImageListItem>
-                ))}
-              </ImageList>
+              {photos.length >= 1 ? (
+                <ImageList variant="standard" cols={getCols()} gap={30}>
+                  {photos?.map((photo) => (
+                    <ImageListItem key={photo.imageId} className="photo-item">
+                      <img
+                        src={photo.image}
+                        onClick={() => {
+                          setImageExpand(photo);
+                          setModalExpand(true);
+                        }}
+                      />
+                      <Button
+                        onClick={() => {
+                          setModalDelete(true);
+                          setIdDelete(photo.imageId);
+                        }}
+                        className="delete-photo"
+                      >
+                        <Trash2 />
+                      </Button>
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              ) : (
+                <>Nenhuma imagem encontrada</>
+              )}
             </Box>
           )}
         </div>

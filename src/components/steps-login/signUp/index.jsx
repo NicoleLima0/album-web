@@ -5,10 +5,9 @@ import {
   InputAdornment,
   IconButton,
   Box,
-  Alert,
-  Snackbar,
 } from "@mui/material";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify";
 
 function SignUpLogin({
   emailCreated,
@@ -24,16 +23,13 @@ function SignUpLogin({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-  const [isWarn, setIsWarn] = useState(false);
-  const [openSnack, setOpenSnack] = useState(false);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (passwordCreated !== passwordConfirmCreated) {
-      setIsWarn(true);
+      toast.warn("Senhas diferentes. Verifique!");
       return;
     } else {
-      isWarn && setIsWarn(false);
       auth.signUp(
         userNameCreated,
         setUserNameCreated,
@@ -41,8 +37,7 @@ function SignUpLogin({
         setEmailCreated,
         passwordConfirmCreated,
         setPasswordConfirmCreated,
-        setPasswordCreated,
-        setOpenSnack
+        setPasswordCreated
       );
     }
   };
@@ -55,26 +50,8 @@ function SignUpLogin({
     setPasswordConfirmCreated("");
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSnack(false);
-  };
-
   return (
     <>
-      <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleClose}>
-        <Alert
-          onClose={handleClose}
-          severity="success"
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          Usuário cadastrado com sucesso!
-        </Alert>
-      </Snackbar>
       <div className="signup-container">
         <div className="title">
           Crie sua conta no <span className="highlight">Álbum Web</span>
@@ -145,11 +122,6 @@ function SignUpLogin({
               ),
             }}
           />
-          {isWarn ? (
-            <Alert severity="warning">Senhas diferentes. Verifique!</Alert>
-          ) : (
-            <></>
-          )}
           <div className="actions-signup">
             <Button
               type="button"

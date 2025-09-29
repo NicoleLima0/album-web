@@ -5,13 +5,11 @@ import {
   InputAdornment,
   IconButton,
   Box,
-  Alert,
 } from "@mui/material";
 import { useState } from "react";
 
 function MainLogin({ email, setEmail, password, setPassword, auth, setStep }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -31,7 +29,7 @@ function MainLogin({ email, setEmail, password, setPassword, auth, setStep }) {
           className="login-form"
           onSubmit={(e) => {
             e.preventDefault();
-            auth.signIn(email, password, isError, setIsError);
+            auth.signIn(email, password);
           }}
         >
           <TextField
@@ -67,7 +65,6 @@ function MainLogin({ email, setEmail, password, setPassword, auth, setStep }) {
               ),
             }}
           />
-          {isError ? <Alert severity="error">Erro ao realizar login</Alert> : <></>}
           <div className="other-actions">
             <Button
               variant="text"

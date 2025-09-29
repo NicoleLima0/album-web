@@ -10,6 +10,7 @@ import { Box, TextField } from "@mui/material";
 import { useState } from "react";
 import { albunsKey } from "../../constants/defaultValues";
 import { Transition } from "../../contexts/transition";
+import { toast } from "react-toastify";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -65,7 +66,7 @@ function ModalNewAlbum({ open, setOpen, setItemData }) {
 
     setItemData((prevItemData) => [...prevItemData, payload]);
     localStorage.setItem(albunsKey, JSON.stringify(albuns));
-
+    toast.success("Álbum criado com sucesso!");
     handleClose();
   };
 
