@@ -7,10 +7,8 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import { X } from "lucide-react";
 import { Box, TextField } from "@mui/material";
-import { useState } from "react";
-import { albunsKey } from "../../constants/defaultValues";
+import { useState, useEffect } from "react";
 import { Transition } from "../../contexts/transition";
-import { toast } from "react-toastify";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -27,47 +25,33 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-function ModalNewAlbum({ open, setOpen, setItemData }) {
+function ModalNewAlbum({ open, setOpen, onSave, onClose, albumData }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  const isEditing = !!albumData;
+
+  useEffect(() => {
+    if (isEditing) {
+      setTitle(albumData.title || "");
+      setDescription(albumData.description || "");
+    } else {
+      setTitle("");
+      setDescription("");
+    }
+  }, [albumData, open, isEditing]);
+
   const handleClose = () => {
     setOpen(false);
-    setTitle("");
-    setDescription("");
+    if (onClose) {
+      onClose();
+    }
   };
 
-  const handleConclude = () => {
-    const payload = {
-      id: Math.floor(Math.random() * 10000) + 1,
-      title: title,
-      description: description,
-    };
-
-    const existingAlbuns = localStorage.getItem(albunsKey);
-
-    let albuns = [];
-
-    if (existingAlbuns) {
-      try {
-        const parsedAlbuns = JSON.parse(existingAlbuns);
-
-        if (Array.isArray(parsedAlbuns)) {
-          albuns = parsedAlbuns;
-        } else {
-          albuns = [parsedAlbuns];
-        }
-      } catch (error) {
-        console.error("Erro ao analisar os dados do localStorage:", error);
-        albuns = [];
-      }
-    }
-    albuns.push(payload);
-
-    setItemData((prevItemData) => [...prevItemData, payload]);
-    localStorage.setItem(albunsKey, JSON.stringify(albuns));
-    toast.success("Álbum criado com sucesso!");
-    handleClose();
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const payload = { title, description };
+    onSave(payload);
   };
 
   return (
@@ -82,7 +66,7 @@ function ModalNewAlbum({ open, setOpen, setItemData }) {
         className="modal-new-album-container"
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Criar novo álbum
+          {isEditing ? "Editar álbum" : "Criar novo álbum"}
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -98,10 +82,7 @@ function ModalNewAlbum({ open, setOpen, setItemData }) {
         </IconButton>
         <Box
           component="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleConclude();
-          }}
+          onSubmit={handleSubmit}
         >
           <DialogContent dividers className="modal-content-form">
             <TextField
@@ -136,7 +117,7 @@ function ModalNewAlbum({ open, setOpen, setItemData }) {
               variant="contained"
               sx={{ textTransform: "none" }}
             >
-              Concluir
+              {isEditing ? "Salvar alterações" : "Concluir"}
             </Button>
           </DialogActions>
         </Box>

@@ -193,14 +193,14 @@
       opacity: 0.9;
     }
   }
+}
 
-  .back-button {
-    background-color: #949494;
-    padding: 0.6rem 1rem;
-    text-transform: none;
-    font-size: 1rem;
-    &:hover {
-      opacity: 0.9;
-    }
+.back-button {
+  background-color: #949494 !important;
+  padding: 0.6rem 1rem !important;
+  text-transform: none !important;
+  font-size: 1rem !important;
+  &:hover {
+    opacity: 0.9 !important;
   }
 }

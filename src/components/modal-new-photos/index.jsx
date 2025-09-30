@@ -179,6 +179,7 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
             />
             <TextField
               label="Descrição"
+              required
               variant="outlined"
               fullWidth
               multiline
@@ -191,6 +192,7 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
             />
             <TextField
               label="Data/Hora de aquisição"
+              required
               type="datetime-local"
               variant="outlined"
               fullWidth
@@ -203,6 +205,7 @@ function ModalNewPhotos({ open, setOpen, setPhotos }) {
             />
             <TextField
               label="Cor predominante"
+              required
               variant="outlined"
               fullWidth
               className="form-field"

@@ -115,6 +115,9 @@ function AlbumDetail() {
         setImageExpand={setImageExpand}
       />
       <ModalAlert
+        PaperProps={{
+          className: "modal-delete",
+        }}
         open={modalDelete}
         title="Atenção!"
         text="Deseja realmente excluir essa foto?"
@@ -219,11 +222,6 @@ function AlbumDetail() {
                   </TableBody>
                 </Table>
               </TableContainer>
-              {/* <footer className="album-actions">
-                <Button variant="contained" className="btn-delete">
-                  Excluir álbum
-                </Button>
-              </footer> */}
             </>
           ) : (
             <Box sx={{ width: "100%" }}>

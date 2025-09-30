@@ -30,6 +30,7 @@ function Home() {
   const navigate = useNavigate();
   const [albumsWithCovers, setAlbumsWithCovers] = useState([]);
   const [idDelete, setIdDelete] = useState(null);
+  const [albumEmEdicao, setAlbumEmEdicao] = useState(null);
 
   useEffect(() => {
     const existingAlbuns = localStorage.getItem(albunsKey);
@@ -73,9 +74,41 @@ function Home() {
     return 4;
   };
 
-  // function editAlbum(item) {
-  //   debugger;
-  // }
+  function handleEditAlbum(album) {
+    setAlbumEmEdicao(album);
+    setModalNewAlbum(true);
+  }
+
+  const handleOpenCreateModal = () => {
+    setAlbumEmEdicao(null);
+    setModalNewAlbum(true);
+  };
+
+  const handleSaveAlbum = (albumData) => {
+    const existingAlbuns = localStorage.getItem(albunsKey);
+    const albuns = existingAlbuns ? JSON.parse(existingAlbuns) : [];
+
+    if (albumEmEdicao) {
+      const updatedAlbuns = albuns.map((album) =>
+        album.id === albumEmEdicao.id ? { ...album, ...albumData } : album
+      );
+      localStorage.setItem(albunsKey, JSON.stringify(updatedAlbuns));
+      setItemData(updatedAlbuns);
+      toast.success("Álbum atualizado com sucesso!");
+    } else {
+      const newAlbum = {
+        ...albumData,
+        id: new Date().getTime(),
+      };
+      const updatedAlbuns = [...albuns, newAlbum];
+      localStorage.setItem(albunsKey, JSON.stringify(updatedAlbuns));
+      setItemData(updatedAlbuns);
+      toast.success("Álbum criado com sucesso!");
+    }
+
+    setModalNewAlbum(false);
+    setAlbumEmEdicao(null); 
+  };
 
   function deleteAlbum() {
     const albumParaExcluir = albumsWithCovers.find(
@@ -102,9 +135,14 @@ function Home() {
       <ModalNewAlbum
         open={modalNewAlbum}
         setOpen={setModalNewAlbum}
-        setItemData={setItemData}
+        onSave={handleSaveAlbum} 
+        albumData={albumEmEdicao}
+        onClose={() => setAlbumEmEdicao(null)} 
       />
       <ModalAlert
+        PaperProps={{
+          className: "modal-delete",
+        }}
         open={modalDelete}
         title="Atenção!"
         text="Deseja realmente excluir esse álbum?"
@@ -115,6 +153,7 @@ function Home() {
           setModalDelete(false);
         }}
       />
+
       <div className="home-container">
         <div className="home-header">
           <h1 className="header-title">Meus álbuns de fotos</h1>
@@ -159,11 +198,13 @@ function Home() {
                         title={item.title}
                         subtitle={
                           <div className="d-flex align-items-center justify-content-between">
-                            {item.description}
+                            <div className="subtitle-container">
+                              {item.description}
+                            </div>
                             <div>
                               <Button
                                 onClick={() => {
-                                  // editAlbum(item.id);
+                                  handleEditAlbum(item);
                                 }}
                                 className="edit-album"
                               >
@@ -199,9 +240,7 @@ function Home() {
           <Button
             variant="contained"
             className="create-album-button"
-            onClick={() => {
-              setModalNewAlbum(true);
-            }}
+            onClick={handleOpenCreateModal}
           >
             Criar novo álbum
           </Button>

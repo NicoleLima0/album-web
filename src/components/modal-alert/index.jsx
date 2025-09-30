@@ -7,9 +7,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Transition } from "../../contexts/transition";
 
-function ModalAlert({ open, title, text, onConfirm, onCancel }) {
+function ModalAlert({ open, title, text, onConfirm, onCancel, PaperProps }) {
   return (
     <Dialog
+      PaperProps={PaperProps}
       open={open}
       slots={{
         transition: Transition,
@@ -35,6 +36,7 @@ function ModalAlert({ open, title, text, onConfirm, onCancel }) {
           Concluir
         </Button>
         <Button
+          className="back-button"
           onClick={() => {
             onCancel();
           }}
