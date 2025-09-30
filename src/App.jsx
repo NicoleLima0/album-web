@@ -1,4 +1,4 @@
-import { HashRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { baseroot } from "./constants/defaultValues";
 import Routers from "./router";
 import { ToastContainer } from "react-toastify";
@@ -7,9 +7,9 @@ function App(props) {
   return (
     <>
       <ToastContainer />
-      <HashRouter basename={baseroot}>
+      <BrowserRouter basename={baseroot}>
         <Routers {...props} />
-      </HashRouter>
+      </BrowserRouter>
     </>
   );
 }

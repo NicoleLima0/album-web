@@ -1,12 +1,14 @@
 Álbum Web
+
 Um aplicativo web moderno e responsivo para criar e gerenciar seus álbuns de fotos pessoais. Crie, personalize e organize suas memórias de forma simples e intuitiva.
 
-> Sobre o Projeto
+Sobre o Projeto
 O Álbum Web foi desenvolvido como uma solução front-end completa para a organização de fotografias digitais. A aplicação permite que os usuários criem uma conta (simulada via LocalStorage), montem álbuns com título e descrição, e gerenciem suas fotos de maneira eficiente.
 
 O projeto foi construído utilizando as tecnologias mais modernas do ecossistema React, com foco em uma experiência de usuário fluida e um design limpo e agradável.
 
 🚀 Funcionalidades Principais
+
 👤 Autenticação de Usuário: Sistema de cadastro e login simulado, utilizando o LocalStorage para persistir os dados da sessão.
 
 🖼️ Galeria de Álbuns: Visualize todos os seus álbuns em uma tela principal. Crie novos álbuns com título e descrição personalizados.
